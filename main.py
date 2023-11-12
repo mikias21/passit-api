@@ -1,15 +1,16 @@
 import uvicorn
 from fastapi import FastAPI
+from dotenv import load_dotenv
 # Local imports
 from constants.general import General
+from routes import authentication
+
+# Local .env
+load_dotenv('.env')
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
+app.include_router(authentication.router)
 
 if __name__ == "__main__":
     if General.RELEASE.value:
