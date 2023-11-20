@@ -8,3 +8,4 @@ class AuthErrorMessages(Enum):
     INVALID_USERAGENT = "Invalid User Agent, Check device or browser."
     SIGNUP_SUCCESS = "Account created, please check email for verification."
     EMAIL_TAKEN = "Email already taken, use a different email."
+    EMAIL_SENDING_ERROR = "Unable to send email, please try again later."
