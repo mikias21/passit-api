@@ -56,7 +56,11 @@ async def signup_controller(user: Signup):
         # Check if email is already used for registeration
         old_user = users_collection.find_one({'user_email': user.email})
         if old_user:
-            return Response(AuthErrorMessages.EMAIL_TAKEN.value, status.HTTP_406_NOT_ACCEPTABLE)
+            # Further validation needed here
+            if old_user['user_activated'] == False:
+                users_collection.delete_one({'user_email': user.email})
+            else:
+                return Response(AuthErrorMessages.EMAIL_TAKEN.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # send email
         if validation_pass: 

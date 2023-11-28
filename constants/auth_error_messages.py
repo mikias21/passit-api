@@ -9,3 +9,5 @@ class AuthErrorMessages(Enum):
     SIGNUP_SUCCESS = "Account created, please check email for verification."
     EMAIL_TAKEN = "Email already taken, use a different email."
     EMAIL_SENDING_ERROR = "Unable to send email, please try again later."
+    ACTIVATION_TOKEN_EXPIRED = "Your account activation link is expired, please signup again."
+    ACCOUNT_ACTIVATED = "Account is activated, Login to start using passit."
