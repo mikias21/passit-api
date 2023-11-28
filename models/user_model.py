@@ -1,11 +1,12 @@
 from bson import ObjectId
 from schematics.models import Model
-from schematics.types import EmailType, StringType, FloatType, DateTimeType, BaseType
+from schematics.types import EmailType, StringType, FloatType, DateTimeType, BaseType, BooleanType
 
 class User(Model):
     user_id = BaseType(default=lambda: ObjectId(), serialize_when_none=False)
     user_email = EmailType(required=True)
     user_password = StringType(min_length=8, max_length=16, required=True)
+    user_activated = BooleanType(default=False)
     user_signup_ip = StringType(required=True)
     user_signup_browser = StringType(required=True)
     user_signup_browser_version = StringType(required=True)
