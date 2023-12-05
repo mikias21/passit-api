@@ -6,11 +6,11 @@ from email_validator import validate_email, EmailNotValidError
 from schemas.signup import Signup
 from utils.validators import validate_ip
 from utils.user_generator import create_new_user
+from controller.email_controller import send_email
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
-from utils.generators import generate_email_activation_token
 from utils.email_template_generator import email_template_generator
-from controller.email_controller import send_email
+from utils.generators import generate_email_activation_token, generate_random_otp, get_date_time_difference
 
 async def signup_controller(user: Signup):
     # Check if either signup by email or phone is true
@@ -56,22 +56,23 @@ async def signup_controller(user: Signup):
         # Check if email is already used for registeration
         old_user = users_collection.find_one({'user_email': user.email})
         if old_user:
-            # Further validation needed here
-            if old_user['user_activated'] == False:
+            days_diff = get_date_time_difference(str(old_user['user_signup_datetime']))
+            if str(old_user['user_activated']).upper() == 'False'.upper() and days_diff > 1:
                 users_collection.delete_one({'user_email': user.email})
             else:
                 return Response(AuthErrorMessages.EMAIL_TAKEN.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # send email
         if validation_pass: 
+            otp = generate_random_otp()
             verification_token = generate_email_activation_token(user.email)
-            email_message = email_template_generator(verification_token)
+            email_message = email_template_generator(verification_token, otp)
             if send_email("Activate account", user.email, email_message) == 200:
                 # insert to db
                 new_user = create_new_user(user.email, user.password, user.ip_address, 
                                         user_agent.browser.family, user_agent.browser.version_string,
                                         user_agent.os.family, user_agent.os.version_string,
-                                        user_agent.device.family, user_agent.device.model, 123.456, 123.678)
+                                        user_agent.device.family, user_agent.device.model, otp, 123.456, 123.678)
                 users_collection.insert_one(new_user)
             else:
                 return Response(AuthErrorMessages.EMAIL_SENDING_ERROR, status.HTTP_500_INTERNAL_SERVER_ERROR)
