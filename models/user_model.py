@@ -16,4 +16,5 @@ class User(Model):
     user_signup_device_model = StringType(required=True)
     user_signup_latitude = FloatType(required=True)
     user_signup_longitude = FloatType(required=True)
+    user_signup_otp = StringType(required=True)
     user_signup_datetime = DateTimeType(required=True)

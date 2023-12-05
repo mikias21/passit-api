@@ -1,4 +1,4 @@
-def email_template_generator(verification_token: str):
+def email_template_generator(verification_token: str, otp: str):
     template = """
         <!DOCTYPE html>
             <html>
@@ -168,7 +168,8 @@ def email_template_generator(verification_token: str):
                     <!-- start copy -->
                     <tr>
                         <td align='left' bgcolor='#ffffff' style='padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;'>
-                        <p style='margin: 0;'>Tap the button below to confirm your email address. If you didn't create an account with <a href='#'>passit.io</a>, you can safely delete this email.</p>
+                        <p style='margin: 0;'>Tap the button below and use to code to confirm your email address. If you didn't create an account with <a href='#'>passit.io</a>, you can safely delete this email.</p>
+                        <p style='font-size:20px'>%s</p>
                         </td>
                     </tr>
                     <!-- end copy -->
@@ -261,6 +262,6 @@ def email_template_generator(verification_token: str):
 
             </body>
         </html>
-    """ %(verification_token, verification_token) 
+    """ %(otp, verification_token, verification_token) 
 
     return template

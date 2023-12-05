@@ -12,6 +12,7 @@ def create_new_user(user_email: str,
                     user_os_ver: str,
                     user_device: str,
                     user_device_model: str,
+                    otp: str,
                     user_lat: float,
                     user_long: float,
                     user_signup_datetime: str = str(datetime.now())):
@@ -28,6 +29,7 @@ def create_new_user(user_email: str,
     new_user.user_signup_device_model = user_device_model
     new_user.user_signup_latitude = user_lat
     new_user.user_signup_longtiude = user_long
+    new_user.user_signup_otp = otp
     new_user.user_signup_datetime = user_signup_datetime
     
     return dict(new_user)
