@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Response
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import ORJSONResponse, JSONResponse
 # Local imports
 from schemas.otp import OTP
 from schemas.signup import Signup
@@ -25,6 +25,5 @@ async def activate_account(token: str, otp: OTP):
 
 @router.post('/signin', status_code=status.HTTP_301_MOVED_PERMANENTLY)
 async def signin_user(user: Signin):
-    print(user.email, user.password)
-    response: Response = await signin_controller(user)
+    response = await signin_controller(user)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)

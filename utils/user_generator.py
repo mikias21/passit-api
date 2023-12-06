@@ -1,7 +1,7 @@
 from bson import ObjectId
 from datetime import datetime
 # Local import
-from models.user_model import User
+from models.user_model import User, UserLogin
 
 def create_new_user(user_email: str, 
                     user_password: str, 
@@ -33,3 +33,32 @@ def create_new_user(user_email: str,
     new_user.user_signup_datetime = user_signup_datetime
     
     return dict(new_user)
+
+def create_signin_user_record(user_email: str, 
+                    user_ip: str,
+                    user_browser: str,
+                    user_browser_ver: str,
+                    user_os: str,
+                    user_os_ver: str,
+                    user_device: str,
+                    user_device_model: str,
+                    user_lat: float,
+                    user_long: float,
+                    user_signin_datetime: str = str(datetime.now()), 
+                    otp: str = ""):
+    record = UserLogin()
+    record.user_id = ObjectId()
+    record.user_email = user_email
+    record.user_signin_ip = user_ip
+    record.user_signin_browser = user_browser
+    record.user_signin_browser_version = user_browser_ver
+    record.user_signin_os = user_os
+    record.user_signin_os_version = user_os_ver
+    record.user_signin_device = user_device
+    record.user_signin_device_model = user_device_model
+    record.user_signin_latitude = user_lat
+    record.user_signin_longtiude = user_long
+    record.user_signin_otp = otp
+    record.user_signin_datetime = user_signin_datetime
+
+    return dict(record)

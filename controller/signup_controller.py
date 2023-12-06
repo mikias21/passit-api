@@ -7,6 +7,7 @@ from schemas.signup import Signup
 from utils.validators import validate_ip
 from utils.user_generator import create_new_user
 from controller.email_controller import send_email
+from utils.generators import generate_password_hash
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
 from utils.email_template_generator import email_template_generator
@@ -69,7 +70,7 @@ async def signup_controller(user: Signup):
             email_message = email_template_generator(verification_token, otp)
             if send_email("Activate account", user.email, email_message) == 200:
                 # insert to db
-                new_user = create_new_user(user.email, user.password, user.ip_address, 
+                new_user = create_new_user(user.email, generate_password_hash(user.password), user.ip_address, 
                                         user_agent.browser.family, user_agent.browser.version_string,
                                         user_agent.os.family, user_agent.os.version_string,
                                         user_agent.device.family, user_agent.device.model, otp, 123.456, 123.678)
