@@ -2,7 +2,10 @@ import os
 import math
 import random
 from datetime import datetime
+from passlib.context import CryptContext
 from itsdangerous import URLSafeTimedSerializer
+
+password_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 def generate_email_activation_token(email: str):
     serializer = URLSafeTimedSerializer(os.getenv('APP_SECRET_KEY'))
@@ -22,3 +25,9 @@ def get_date_time_difference(date: str) -> int:
     date_diff = current_date - date
     days_diff = date_diff.days
     return days_diff
+
+def generate_password_hash(password: str) -> str:
+    return password_context.hash(password)
+
+def verify_password_hash(password: str, hash: str) -> bool:
+    return password_context.verify(password, hash)

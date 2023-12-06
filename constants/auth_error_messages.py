@@ -11,3 +11,6 @@ class AuthErrorMessages(Enum):
     EMAIL_SENDING_ERROR = "Unable to send email, please try again later."
     ACTIVATION_TOKEN_EXPIRED = "Your account activation link is expired, please signup again."
     ACCOUNT_ACTIVATED = "Account is activated, Login to start using passit."
+    ACCOUNT_NOT_FOUND = "Incorrect username or passsword."
+    ACCOUNT_NOT_ACTIVATED = "Unable to login, account is not activated."
+    VERIFY_ACCOUNT = "We observed unusual activity, please verify account through email."
