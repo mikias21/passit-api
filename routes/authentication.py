@@ -27,3 +27,7 @@ async def activate_account(token: str, otp: OTP):
 async def signin_user(user: Signin):
     response = await signin_controller(user)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
+
+@router.post('/verify', status_code=status.HTTP_301_MOVED_PERMANENTLY)
+async def verify_account(account: VerifyAccount):
+    pass
