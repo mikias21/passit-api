@@ -10,7 +10,7 @@ from controller.email_controller import send_email
 from utils.generators import generate_password_hash
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
-from utils.email_template_generator import email_template_generator
+from utils.email_template_generator import generate_account_activation_template
 from utils.generators import generate_email_activation_token, generate_random_otp, get_date_time_difference
 
 async def signup_controller(user: Signup):
@@ -67,7 +67,7 @@ async def signup_controller(user: Signup):
         if validation_pass: 
             otp = generate_random_otp()
             verification_token = generate_email_activation_token(user.email)
-            email_message = email_template_generator(verification_token, otp)
+            email_message = generate_account_activation_template(verification_token, otp)
             if send_email("Activate account", user.email, email_message) == 200:
                 # insert to db
                 new_user = create_new_user(user.email, generate_password_hash(user.password), user.ip_address, 
