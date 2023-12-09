@@ -5,9 +5,11 @@ from schemas.otp import OTP
 from schemas.signup import Signup
 from schemas.signin import Signin
 from schemas.verify_account import VerifyAccount
+from schemas.forgot_password import ForgotPassword
 from controller.signup_controller import signup_controller
 from controller.signin_controller import signin_controller
 from controller.verify_account_controller import verify_account_controller
+from controller.forgot_password_controller import forgot_password_controller
 from controller.activate_account_controller import activate_account_controller
 
 router = APIRouter(
@@ -33,4 +35,9 @@ async def signin_user(user: Signin):
 @router.post('/verify/{token}', status_code=status.HTTP_301_MOVED_PERMANENTLY)
 async def verify_account(token: str, account: VerifyAccount):
     response = await verify_account_controller(token, account)
+    return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
+
+@router.get('/forgot', status_code=status.HTTP_200_OK)
+async def forgot_password(email: ForgotPassword):
+    response = await forgot_password_controller(email)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
