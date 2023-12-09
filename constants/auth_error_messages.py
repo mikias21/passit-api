@@ -17,3 +17,5 @@ class AuthErrorMessages(Enum):
     INCORRECT_OTP = "Invalid code, fill in the correct code and submit."
     FORGOT_PASSWORD = "Check your email and follow instructions to change your password."
     USER_NOT_FOUND = "User not found with the following email."
+    PASSWORD_NOT_MATCH = "Passwords do not match, confirm password again."
+    PASSWORD_UPDATED = "Your password has been updated successfully."
