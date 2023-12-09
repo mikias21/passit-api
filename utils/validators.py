@@ -1,6 +1,6 @@
 import os
 import ipaddress
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer
 
 def validate_ip(ip: str):
     try:
@@ -15,8 +15,8 @@ def validate_email_activation_token(token):
         email = serializer.loads(
             token,
             salt=os.getenv('APP_SALT'),
-            max_age=int(os.getenv('ACCOUNT_ACTIVATION_TOKEN_EXPIRATION_SECCONDS'))
+            max_age=int(os.getenv('ACCOUNT_ACTIVATION_TOKEN_EXPIRATION_SECONDS'))
         )
-    except SignatureExpired as e:
+    except Exception:
         return False
     return email

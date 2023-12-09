@@ -4,8 +4,10 @@ from fastapi.responses import ORJSONResponse, JSONResponse
 from schemas.otp import OTP
 from schemas.signup import Signup
 from schemas.signin import Signin
+from schemas.verify_account import VerifyAccount
 from controller.signup_controller import signup_controller
 from controller.signin_controller import signin_controller
+from controller.verify_account_controller import verify_account_controller
 from controller.activate_account_controller import activate_account_controller
 
 router = APIRouter(
@@ -28,6 +30,7 @@ async def signin_user(user: Signin):
     response = await signin_controller(user)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
 
-@router.post('/verify', status_code=status.HTTP_301_MOVED_PERMANENTLY)
-async def verify_account(account: VerifyAccount):
-    pass
+@router.post('/verify/{token}', status_code=status.HTTP_301_MOVED_PERMANENTLY)
+async def verify_account(token: str, account: VerifyAccount):
+    response = await verify_account_controller(token, account)
+    return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)

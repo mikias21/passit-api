@@ -14,3 +14,4 @@ class AuthErrorMessages(Enum):
     ACCOUNT_NOT_FOUND = "Incorrect username or passsword."
     ACCOUNT_NOT_ACTIVATED = "Unable to login, account is not activated."
     VERIFY_ACCOUNT = "We observed unusual activity, please verify account through email."
+    INCORRECT_OTP = "Invalid code, fill in the correct code and submit."
