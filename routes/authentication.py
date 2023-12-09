@@ -30,7 +30,7 @@ async def signin_user(user: Signin):
     response = await signin_controller(user)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
 
-@router.post('/verify', status_code=status.HTTP_301_MOVED_PERMANENTLY)
-async def verify_account(account: VerifyAccount):
-    response = await verify_account_controller(account)
+@router.post('/verify/{token}', status_code=status.HTTP_301_MOVED_PERMANENTLY)
+async def verify_account(token: str, account: VerifyAccount):
+    response = await verify_account_controller(token, account)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)

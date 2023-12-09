@@ -155,7 +155,7 @@ def generate_account_verification_template(verification_token: str, otp: str):
                     <div class="otp-container">
                         <p>Use this code to activate your account</p><h3>%s</h3>
                     </div>
-                    <a href="http://127.0.0.1:5000/auth/verify/%s" class="activate-link">Activate account</a>
+                    <a href="http://127.0.0.1:5000/auth/verify/%s" class="activate-link">Verify account</a>
                     <p><small>You received this email because we received a request for verification for your account. If you didn't request verification
                     you can safely delete this email.</small></p>
                 </div>
