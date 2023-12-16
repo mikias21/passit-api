@@ -21,8 +21,6 @@ async def signup_controller(user: Signup):
     password_schema = PasswordValidator()
     password_schema.min(8).max(16).has().uppercase().has().lowercase().has().digits().has().digits().has().no().spaces().has().symbols()
     
-    validation_pass = True
-
     # if by email
     if user.is_email:
         # Validate email
@@ -30,7 +28,6 @@ async def signup_controller(user: Signup):
             email_info = validate_email(user.email)
             user.email = email_info.normalized
         except EmailNotValidError:
-            validation_pass = False
             return Response(AuthErrorMessages.INVALID_EMAIL.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # Valiate password and encrypt
@@ -38,11 +35,7 @@ async def signup_controller(user: Signup):
             return Response(AuthErrorMessages.INVALID_PASSWORD.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # Validate IP
-        if validate_ip(user.ip_address):
-            # If IP valid, make api request to get location lat,long
-            pass
-        else:
-            validation_pass = False
+        if not validate_ip(user.ip_address):
             return Response(AuthErrorMessages.INVALID_IP.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # Validate UserAgent
@@ -51,7 +44,6 @@ async def signup_controller(user: Signup):
             # Parse User Agent
             user_agent = parse(user.user_agent)
         else:
-            validation_pass = False
             return Response(AuthErrorMessages.INVALID_USERAGENT.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # Check if email is already used for registeration
@@ -64,20 +56,19 @@ async def signup_controller(user: Signup):
                 return Response(AuthErrorMessages.EMAIL_TAKEN.value, status.HTTP_406_NOT_ACCEPTABLE)
         
         # send email
-        if validation_pass: 
-            otp = generate_random_otp()
-            verification_token = generate_email_activation_token(user.email)
-            email_message = generate_account_activation_template(verification_token, otp)
-            if send_email("Activate account", user.email, email_message) == 200:
-                # insert to db
-                new_user = create_new_user(user.email, generate_password_hash(user.password), user.ip_address, 
-                                        user_agent.browser.family, user_agent.browser.version_string,
-                                        user_agent.os.family, user_agent.os.version_string,
-                                        user_agent.device.family, user_agent.device.model, otp, 123.456, 123.678)
-                users_collection.insert_one(new_user)
-            else:
-                return Response(AuthErrorMessages.EMAIL_SENDING_ERROR, status.HTTP_500_INTERNAL_SERVER_ERROR)
-            return Response(AuthErrorMessages.SIGNUP_SUCCESS.value, status.HTTP_201_CREATED)
+        otp = generate_random_otp()
+        verification_token = generate_email_activation_token(user.email)
+        email_message = generate_account_activation_template(verification_token, otp)
+        if send_email("Activate account", user.email, email_message) == 200:
+            # insert to db
+            new_user = create_new_user(user.email, generate_password_hash(user.password), user.ip_address, 
+                                    user_agent.browser.family, user_agent.browser.version_string,
+                                    user_agent.os.family, user_agent.os.version_string,
+                                    user_agent.device.family, user_agent.device.model, otp, 123.456, 123.678)
+            users_collection.insert_one(new_user)
+        else:
+            return Response(AuthErrorMessages.EMAIL_SENDING_ERROR, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(AuthErrorMessages.SIGNUP_SUCCESS.value, status.HTTP_201_CREATED)
 
 
     # if by phone

@@ -12,9 +12,12 @@ app = FastAPI()
 
 app.include_router(authentication.router)
 
-if __name__ == "__main__":
+def run_server():
     if General.RELEASE.value:
         uvicorn.run(app, host="0.0.0.0", port=8000)
     else:
         app.debug = True
         uvicorn.run(app, host="127.0.0.1", port=5000)
+
+if __name__ == "__main__":
+    run_server()
