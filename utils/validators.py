@@ -1,5 +1,6 @@
 import os
 import ipaddress
+from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer
 
 def validate_ip(ip: str):
@@ -20,3 +21,10 @@ def validate_email_activation_token(token):
     except Exception:
         return False
     return email
+
+def validate_url(url: str) -> bool:
+    parsed_url = urlparse(url)
+
+    if parsed_url.scheme and parsed_url.netloc:
+        return True
+    return False

@@ -4,9 +4,11 @@ from fastapi import APIRouter, status, Depends, HTTPException
 # Local imports
 from controller.jwt_controller import verify_access_token
 from constants.password_error_message import PasswordErrorMessages
+from controller.passwords.add_passwords import add_password_controller
+from controller.passwords.delete_passwords import delete_password_controller
+from controller.passwords.update_passwords import update_password_controller
 from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel
 from controller.passwords.get_passwords import get_passwords_controller, get_password_controller
-from controller.passwords.add_passwords import add_password_controller
 
 router = APIRouter(prefix='/passwords')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='signin')
@@ -33,9 +35,15 @@ async def add_password(password: PasswordsRequestModel, token: str = Depends(oau
     return data
 
 @router.put('/{id}', status_code=status.HTTP_201_CREATED, response_model=PasswordsResponseModel)
-def update_password():
-    pass
+async def update_password(id: str, password: PasswordsRequestModel, token: str = Depends(oauth2_scheme)):
+    email = verify_access_token(token)
+    data = await update_password_controller(id, email, password)
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
+    return data
 
 @router.delete('/{id}', status_code=status.HTTP_200_OK, response_model=PasswordsResponseModel)
-def delete_password():
-    pass
+async def delete_password(id: str, token: str = Depends(oauth2_scheme)):
+    email = verify_access_token(token)
+    data = await delete_password_controller(id, email)
+    return data

@@ -1,34 +1,33 @@
 from bson import ObjectId
-from datetime import datetime
 from fastapi import status, HTTPException
 
 # Local imports
 from utils.validators import validate_url
 from constants.auth_error_messages import AuthErrorMessages
 from constants.password_error_message import PasswordErrorMessages
+from database.database_connection import users_password_collection
 from utils.generators import generate_encoded_url, generate_clean_input
-from schemas.passwords_req_res import PasswordsRequestModel, PasswordsResponseModel
-from database.database_connection import users_password_collection, users_collection
+from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel
 
-async def add_password_controller(password: PasswordsRequestModel, email: str) -> PasswordsResponseModel:
+async def update_password_controller(id: str, email: str, password: PasswordsRequestModel) -> PasswordsResponseModel:
     if not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
     
+    if not id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
+    
+    id = ObjectId(id)
+        
     # Validate label
     if not password.label.isalnum() or len(password.label.strip()) > 20:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
-    # Check if Label is not already used
-    pass_rec = users_password_collection.find_one({"label": password.label})
-    if pass_rec:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.LABEL_USED.value)
-
+    
     # Validate category
     if password.category is None:
         password.category = "main"
     elif not password.category.isalnum() or len(password.category.strip()) > 20:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
-    # Check if category is not used already or use category which is not found
-
+    
     # validate url
     if not validate_url(password.url.strip()):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_URL.value)
@@ -38,18 +37,21 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     # validate description / comments
     password.description = generate_clean_input(password.description)
 
-    # Encrypt password
-    user_rec = users_collection.find_one({"user_email": email})
-    if not user_rec:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
-    
-    new_password = dict(password)
-    new_password.update({'password_id': ObjectId(), 'owner_email': email, 'added_date_time': str(datetime.now())})
+    update_data = {
+        "$set": {
+            "label": password.label.strip(),
+            "password": password.password,
+            "category": password.category,
+            "url": password.url,
+            "description": password.description
+        }
+    }
 
-    result = users_password_collection.insert_one(new_password)
+    result = users_password_collection.update_one({"password_id": id, "owner_email": email}, update_data)
 
-    insert_id = result.inserted_id
-    inserted_doc = users_password_collection.find_one({"_id": insert_id})
-    inserted_doc['password_id'] = str(inserted_doc['password_id'])
+    if result.modified_count > 0:
+        updated = users_password_collection.find_one({"password_id": id, "owner_email": email})
+        updated['password_id'] = str(updated['password_id'])
+        return updated 
     
-    return inserted_doc
+    return None
