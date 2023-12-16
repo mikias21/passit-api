@@ -19,3 +19,4 @@ class AuthErrorMessages(Enum):
     USER_NOT_FOUND = "User not found with the following email."
     PASSWORD_NOT_MATCH = "Passwords do not match, confirm password again."
     PASSWORD_UPDATED = "Your password has been updated successfully."
+    LOGIN_EXPIRED = "Login has expired, please login again."

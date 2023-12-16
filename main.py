@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 # Local imports
 from constants.general import General
-from routes import authentication
+from routes import authentication, passwords
 
 # Local .env
 load_dotenv('.env')
@@ -11,6 +11,7 @@ load_dotenv('.env')
 app = FastAPI()
 
 app.include_router(authentication.router)
+app.include_router(passwords.router)
 
 def run_server():
     if General.RELEASE.value:
