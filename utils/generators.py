@@ -2,6 +2,10 @@ import os
 import math
 import random
 import bleach
+import secrets
+import pyaes
+import pbkdf2
+import binascii
 from Crypto.Cipher import AES
 from datetime import datetime
 from passlib.context import CryptContext
@@ -50,14 +54,15 @@ def generate_clean_input(input: str) -> str:
     sanitized_input = bleach.clean(input, tags=General.ALLOWED_TAGS.value, attributes=General.ALLOWED_ATTRIBUTES.value)
     return sanitized_input
 
-def generate_encrypted_text(input: str) -> str:
-    key = get_random_bytes(16)
-    cipher = AES.new(key, AES.MODE_EAX)
-    cipher_input, tag = cipher.encrypt_and_digest(input)
-    nonce = cipher.nonce
-    return cipher_input, tag, nonce, key
+def generate_encrypted_text(input: str, email: str):
+    salt = os.urandom(16)
+    key = pbkdf2.PBKDF2(email, salt).read(32)
+    iv = secrets.randbits(8)
+    aes = pyaes.AESModeOfOperationCTR(key, pyaes.Counter(iv))
+    cipher_input = aes.encrypt(input)
+    return key, iv, cipher_input
 
-def generate_plane_text(key: str, encrypted_text: str, nonce, tag) -> str:
-    cipher = AES.new(key, AES.MODE_EAX, nonce)
-    data = cipher.decrypt_and_verify(encrypted_text, tag)
-    return data
+def generate_plane_text(key, iv, cyphered_input) -> str:
+    aes = pyaes.AESModeOfOperationCTR(key, pyaes.Counter(iv))
+    decrypted = aes.decrypt(cyphered_input)
+    return decrypted.decode('utf-8')

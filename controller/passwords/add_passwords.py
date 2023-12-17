@@ -1,5 +1,5 @@
-from bson import ObjectId
 from datetime import datetime
+from bson import ObjectId, Binary
 from fastapi import status, HTTPException
 
 # Local imports
@@ -7,6 +7,7 @@ from utils.validators import validate_url
 from constants.auth_error_messages import AuthErrorMessages
 from constants.password_error_message import PasswordErrorMessages
 from utils.generators import generate_encoded_url, generate_clean_input
+from utils.generators import generate_encrypted_text, generate_plane_text
 from schemas.passwords_req_res import PasswordsRequestModel, PasswordsResponseModel
 from database.database_connection import users_password_collection, users_collection
 
@@ -44,13 +45,15 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     if not user_rec:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
     
+    key, iv, cyphered = generate_encrypted_text(password.password, email)
     new_password = dict(password)
-    new_password.update({'password_id': ObjectId(), 'owner_email': email, 'added_date_time': str(datetime.now())})
+    new_password.update({'password': Binary(cyphered), 'enc_key': Binary(key), 'enc_iv': iv, 'password_id': ObjectId(), 'owner_email': email, 'added_date_time': str(datetime.now())})
 
     result = users_password_collection.insert_one(new_password)
 
     insert_id = result.inserted_id
     inserted_doc = users_password_collection.find_one({"_id": insert_id})
     inserted_doc['password_id'] = str(inserted_doc['password_id'])
+    inserted_doc['password'] = password.password
     
     return inserted_doc
