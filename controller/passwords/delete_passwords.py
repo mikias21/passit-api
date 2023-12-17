@@ -11,8 +11,11 @@ async def delete_password_controller(id: str, email: str) -> PasswordsResponseMo
     if not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
     
-    if id:
-        password_object_id = ObjectId(id)
+    try:
+        if id:
+            password_object_id = ObjectId(id)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
     
     pass_rec = users_password_collection.find_one({"password_id": password_object_id, "owner_email": email})
     if not pass_rec:

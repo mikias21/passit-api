@@ -6,8 +6,8 @@ class PasswordsResponseModel(BaseModel):
     label: str
     password: str
     category: str
-    url: str
-    description: str
+    url: Optional[str] = None
+    description: Optional[str] = None
     owner_email: str
     added_date_time: str
 

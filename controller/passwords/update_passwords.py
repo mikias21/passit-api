@@ -16,8 +16,11 @@ async def update_password_controller(id: str, email: str, password: PasswordsReq
     if not id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
     
-    id = ObjectId(id)
-        
+    try:
+        id = ObjectId(id)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)    
+    
     # Validate label
     if not password.label.isalnum() or len(password.label.strip()) > 20:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
@@ -29,13 +32,14 @@ async def update_password_controller(id: str, email: str, password: PasswordsReq
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
     
     # validate url
-    if not validate_url(password.url.strip()):
+    if password.url and not validate_url(password.url.strip()):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_URL.value)
-    else:
+    elif password.url:
         password.url = generate_encoded_url(password.url)
 
     # validate description / comments
-    password.description = generate_clean_input(password.description)
+    if password.description:
+        password.description = generate_clean_input(password.description)
 
     update_data = {
         "$set": {

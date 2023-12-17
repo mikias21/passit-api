@@ -30,13 +30,14 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     # Check if category is not used already or use category which is not found
 
     # validate url
-    if not validate_url(password.url.strip()):
+    if password.url and not validate_url(password.url.strip()):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_URL.value)
-    else:
-        password.url = generate_encoded_url(password.url)
+    elif password.url:
+        password.url = generate_encoded_url(password.url.strip())
 
     # validate description / comments
-    password.description = generate_clean_input(password.description)
+    if password.description:
+        password.description = generate_clean_input(password.description)
 
     # Encrypt password
     user_rec = users_collection.find_one({"user_email": email})
