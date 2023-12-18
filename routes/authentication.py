@@ -1,5 +1,6 @@
-from fastapi import APIRouter, status, Response
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import ORJSONResponse, JSONResponse
+from fastapi import APIRouter, status, Response, Request, Depends, HTTPException
 # Local imports
 from schemas.otp import OTP
 from schemas.signup import Signup
@@ -19,6 +20,8 @@ router = APIRouter(
     prefix="/auth",
     tags=['Authentication']
 )
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='signin')
 
 @router.post('/signup', status_code=status.HTTP_201_CREATED)
 async def signup_user(user: Signup):
@@ -52,5 +55,6 @@ async def reset_password(token: str, password: ResetPassword):
 
 @router.get('/signout/{token}', status_code=status.HTTP_200_OK)
 async def signout(token: str):
-    response = await signout_controller(token)
-    return None
+    status = signout_controller(token)
+    if status == 200:
+        raise HTTPException(status_code=status, detail="success")

@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 
 # Local imports
 from constants.auth_error_messages import AuthErrorMessages
+from database.database_connection import users_login_token_collection
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -22,6 +23,12 @@ def verify_access_token(token: str):
         email: str = payload['user_email']
         if email is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
+        
+        # Check token in DB
+        tokens = users_login_token_collection.find({"email": email})
+        for token_dict in tokens:
+            if token_dict['token'] == token:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
         return email
     except JWTError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
