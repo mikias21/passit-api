@@ -1,15 +1,15 @@
-from fastapi import Response, status
+from fastapi import Response, status, HTTPException
 from email_validator import validate_email, EmailNotValidError
 
 # Local imports
 from controller.email_controller import send_email
-from schemas.forgot_password import ForgotPassword
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
 from utils.generators import generate_email_activation_token
 from utils.email_template_generator import generate_forgot_password_template
+from schemas.forgot_password import ForgotPassword, ForgotPasswordResponseModel
 
-async def forgot_password_controller(email: ForgotPassword):
+async def forgot_password_controller(email: ForgotPassword) -> ForgotPasswordResponseModel:
     try:
         email_info = validate_email(email.email)
         email.email = email_info.normalized
@@ -19,8 +19,8 @@ async def forgot_password_controller(email: ForgotPassword):
             token = generate_email_activation_token(email.email)
             email_msg = generate_forgot_password_template(token)
             if send_email("Forgot Password", email.email, email_msg) == 200:
-                return Response(AuthErrorMessages.FORGOT_PASSWORD.value, status.HTTP_200_OK)
+                return {"message": AuthErrorMessages.FORGOT_PASSWORD.value, "status": status.HTTP_200_OK}
         else:
-            return Response(AuthErrorMessages.USER_NOT_FOUND.value, status.HTTP_404_NOT_FOUND)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.USER_NOT_FOUND.value)
     except EmailNotValidError:
-        return Response(AuthErrorMessages.INVALID_EMAIL.value, status.HTTP_406_NOT_ACCEPTABLE)
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_EMAIL.value)

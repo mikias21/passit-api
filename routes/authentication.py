@@ -4,7 +4,6 @@ from fastapi import APIRouter, status, Response, Request, Depends, HTTPException
 from schemas.otp import OTP
 from schemas.reset_password import ResetPassword
 from schemas.verify_account import VerifyAccount
-from schemas.forgot_password import ForgotPassword
 from schemas.signup import Signup, SignupResponseModel
 from schemas.signin import Signin, SigninResponseModel
 from schemas.activate_account import ActivateAccountResponseModel
@@ -13,7 +12,8 @@ from controller.o2auth.signin_controller import signin_controller
 from controller.o2auth.signout_controller import signout_controller
 from controller.reset_password_controller import reset_password_controller
 from controller.verify_account_controller import verify_account_controller
-from controller.forgot_password_controller import forgot_password_controller
+from schemas.forgot_password import ForgotPassword, ForgotPasswordResponseModel
+from controller.o2auth.forgot_password_controller import forgot_password_controller
 from controller.o2auth.activate_account_controller import activate_account_controller
 
 router = APIRouter(
@@ -42,10 +42,10 @@ async def verify_account(token: str, account: VerifyAccount):
     response = await verify_account_controller(token, account)
     return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
 
-@router.get('/forgot', status_code=status.HTTP_200_OK)
+@router.post('/forgot', status_code=status.HTTP_200_OK, response_model=ForgotPasswordResponseModel)
 async def forgot_password(email: ForgotPassword):
     response = await forgot_password_controller(email)
-    return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
+    return response
 
 @router.post('/reset_password/{token}', status_code=status.HTTP_201_CREATED)
 async def reset_password(token: str, password: ResetPassword):

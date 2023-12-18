@@ -71,7 +71,7 @@ def generate_account_activation_template(verification_token: str, otp: str):
                     <div class="otp-container">
                         <p>Use this code to activate your account</p><h3>%s</h3>
                     </div>
-                    <a href="http://localhost:3000/activate/%s" class="activate-link" target=”_blank”>Verify account</a>
+                    <a href="http://localhost:3000/activate/%s" class="activate-link" target="_blank">Verify account</a>
                     <p><small>You received this email because we received a request for activation for your account. If you didn't request activation
                     you can safely delete this email.</small></p>
                 </div>
@@ -236,7 +236,7 @@ def generate_forgot_password_template(token: str):
                     <h1>Forgot Password</h1>
                     <p class="info-1">Tap the button below to change password for your account. If you didn't create an account with <a
                         href="#">passit.io</a>, you can safely delete this email.</p>
-                    <a href="http://127.0.0.1:5000/auth/reset_password/%s" class="activate-link">Change password</a>
+                    <a href="http://localhost:3000/reset/%s" class="activate-link" target="_blank">Change password</a>
                     <p><small>You received this email because we received a request for changing password to your account. If you didn't this request
                     you can safely delete this email.</small></p>
                 </div>
