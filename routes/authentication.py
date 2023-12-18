@@ -1,14 +1,13 @@
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import ORJSONResponse, JSONResponse
 from fastapi import APIRouter, status, Response, Request, Depends, HTTPException
 # Local imports
 from schemas.otp import OTP
-from schemas.signup import Signup
 from schemas.reset_password import ResetPassword
 from schemas.verify_account import VerifyAccount
 from schemas.forgot_password import ForgotPassword
+from schemas.signup import Signup, SignupResponseModel
 from schemas.signin import Signin, SigninResponseModel
-from controller.signup_controller import signup_controller
+from controller.o2auth.signup_controller import signup_controller
 from controller.o2auth.signin_controller import signin_controller
 from controller.o2auth.signout_controller import signout_controller
 from controller.reset_password_controller import reset_password_controller
@@ -21,12 +20,11 @@ router = APIRouter(
     tags=['Authentication']
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='signin')
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED)
+@router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=SignupResponseModel)
 async def signup_user(user: Signup):
-    response: Response = await signup_controller(user)
-    return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
+    response = await signup_controller(user)
+    return response
 
 @router.post('/activate/{token}', status_code=status.HTTP_200_OK)
 async def activate_account(token: str, otp: OTP):

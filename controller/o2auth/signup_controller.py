@@ -1,22 +1,22 @@
 from user_agents import parse
-from fastapi import Response, status
 from password_validator import PasswordValidator
+from fastapi import Response, status, HTTPException
 from email_validator import validate_email, EmailNotValidError
 # Local import
-from schemas.signup import Signup
 from utils.validators import validate_ip
 from utils.user_generator import create_new_user
 from controller.email_controller import send_email
 from utils.generators import generate_password_hash
+from schemas.signup import Signup, SignupResponseModel
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
 from utils.email_template_generator import generate_account_activation_template
 from utils.generators import generate_email_activation_token, generate_random_otp, get_date_time_difference
 
-async def signup_controller(user: Signup):
+async def signup_controller(user: Signup) -> SignupResponseModel:
     # Check if either signup by email or phone is true
     if not user.is_email and not user.is_phone:
-        return Response(AuthErrorMessages.NO_SIGNUP_METHOD.value, status.HTTP_406_NOT_ACCEPTABLE)
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.NO_SIGNUP_METHOD.value)
 
     password_schema = PasswordValidator()
     password_schema.min(8).max(16).has().uppercase().has().lowercase().has().digits().has().digits().has().no().spaces().has().symbols()
@@ -28,15 +28,15 @@ async def signup_controller(user: Signup):
             email_info = validate_email(user.email)
             user.email = email_info.normalized
         except EmailNotValidError:
-            return Response(AuthErrorMessages.INVALID_EMAIL.value, status.HTTP_406_NOT_ACCEPTABLE)
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_EMAIL.value)
         
         # Valiate password and encrypt
         if not password_schema.validate(user.password):
-            return Response(AuthErrorMessages.INVALID_PASSWORD.value, status.HTTP_406_NOT_ACCEPTABLE)
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_PASSWORD.value)
         
         # Validate IP
         if not validate_ip(user.ip_address):
-            return Response(AuthErrorMessages.INVALID_IP.value, status.HTTP_406_NOT_ACCEPTABLE)
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_IP.value)
         
         # Validate UserAgent
         user_agent = None
@@ -44,7 +44,7 @@ async def signup_controller(user: Signup):
             # Parse User Agent
             user_agent = parse(user.user_agent)
         else:
-            return Response(AuthErrorMessages.INVALID_USERAGENT.value, status.HTTP_406_NOT_ACCEPTABLE)
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_USERAGENT.value)
         
         # Check if email is already used for registeration
         old_user = users_collection.find_one({'user_email': user.email})
@@ -53,7 +53,7 @@ async def signup_controller(user: Signup):
             if str(old_user['user_activated']).upper() == 'False'.upper() and days_diff > 1:
                 users_collection.delete_one({'user_email': user.email})
             else:
-                return Response(AuthErrorMessages.EMAIL_TAKEN.value, status.HTTP_406_NOT_ACCEPTABLE)
+                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.EMAIL_TAKEN.value)
         
         # send email
         otp = generate_random_otp()
@@ -67,8 +67,10 @@ async def signup_controller(user: Signup):
                                     user_agent.device.family, user_agent.device.model, otp, 123.456, 123.678)
             users_collection.insert_one(new_user)
         else:
-            return Response(AuthErrorMessages.EMAIL_SENDING_ERROR, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(AuthErrorMessages.SIGNUP_SUCCESS.value, status.HTTP_201_CREATED)
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=AuthErrorMessages.EMAIL_SENDING_ERROR)
+                
+        
+        return {"message": AuthErrorMessages.SIGNUP_SUCCESS.value, "status": status.HTTP_201_CREATED}
 
 
     # if by phone

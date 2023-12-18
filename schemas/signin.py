@@ -9,3 +9,4 @@ class Signin(BaseModel):
 class SigninResponseModel(BaseModel):
     access_token: str
     token_type: str
+

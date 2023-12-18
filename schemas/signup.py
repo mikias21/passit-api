@@ -7,3 +7,7 @@ class Signup(BaseModel):
     password: str
     ip_address: str
     user_agent: str
+
+class SignupResponseModel(BaseModel):
+    message: str
+    status: int
