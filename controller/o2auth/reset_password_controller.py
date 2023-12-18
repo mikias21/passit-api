@@ -1,14 +1,14 @@
-from fastapi import Response, status
 from password_validator import PasswordValidator
+from fastapi import Response, status, HTTPException
 
 # Local imports
-from schemas.reset_password import ResetPassword
 from utils.generators import generate_password_hash
 from database.database_connection import users_collection
 from constants.auth_error_messages import AuthErrorMessages
 from utils.validators import validate_email_activation_token
+from schemas.reset_password import ResetPassword, ResetPasswordResponseModel
 
-async def reset_password_controller(token: str, password: ResetPassword):
+async def reset_password_controller(token: str, password: ResetPassword) -> ResetPasswordResponseModel:
     email = validate_email_activation_token(token)
     if email:
         
@@ -20,21 +20,20 @@ async def reset_password_controller(token: str, password: ResetPassword):
         if user:
 
             if not password_schema.validate(password.password):
-                return Response(AuthErrorMessages.INVALID_PASSWORD.value, status.HTTP_406_NOT_ACCEPTABLE)
+                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_PASSWORD.value)
         
             if password.password.upper() != password.confirm_password.upper():
-                return Response(AuthErrorMessages.PASSWORD_NOT_MATCH.value, status.HTTP_406_NOT_ACCEPTABLE)
-            
+                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.PASSWORD_NOT_MATCH.value)
+
             hashed_password = generate_password_hash(password.password)
 
             myquery = { "user_email": str(email) }
             newvalues = { "$set": { "user_password": hashed_password } }
             users_collection.update_one(myquery, newvalues, upsert=False)
             
-            return Response(AuthErrorMessages.PASSWORD_UPDATED.value, status.HTTP_201_CREATED)
+            return {"message": AuthErrorMessages.PASSWORD_UPDATED.value, "status": status.HTTP_201_CREATED}
 
         else:
-            return Response(AuthErrorMessages.USER_NOT_FOUND.value, status.HTTP_404_NOT_FOUND)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.USER_NOT_FOUND.value)
 
-    
-    return Response(AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value, status.HTTP_406_NOT_ACCEPTABLE)
+    raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value)

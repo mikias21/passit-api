@@ -5,3 +5,7 @@ class ResetPassword(BaseModel):
     confirm_password: str
     ip_address: str
     user_agent: str
+
+class ResetPasswordResponseModel(BaseModel):
+    message: str
+    status: int
