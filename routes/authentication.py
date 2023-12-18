@@ -7,13 +7,14 @@ from schemas.verify_account import VerifyAccount
 from schemas.forgot_password import ForgotPassword
 from schemas.signup import Signup, SignupResponseModel
 from schemas.signin import Signin, SigninResponseModel
+from schemas.activate_account import ActivateAccountResponseModel
 from controller.o2auth.signup_controller import signup_controller
 from controller.o2auth.signin_controller import signin_controller
 from controller.o2auth.signout_controller import signout_controller
 from controller.reset_password_controller import reset_password_controller
 from controller.verify_account_controller import verify_account_controller
 from controller.forgot_password_controller import forgot_password_controller
-from controller.activate_account_controller import activate_account_controller
+from controller.o2auth.activate_account_controller import activate_account_controller
 
 router = APIRouter(
     prefix="/auth",
@@ -26,10 +27,10 @@ async def signup_user(user: Signup):
     response = await signup_controller(user)
     return response
 
-@router.post('/activate/{token}', status_code=status.HTTP_200_OK)
+@router.post('/activate/{token}', status_code=status.HTTP_200_OK, response_model=ActivateAccountResponseModel)
 async def activate_account(token: str, otp: OTP):
-    response: Response = await activate_account_controller(token, otp)
-    return ORJSONResponse({"msg": response.body.decode("utf-8")}, response.status_code)
+    response = await activate_account_controller(token, otp)
+    return response
 
 @router.post('/signin', status_code=status.HTTP_200_OK, response_model=SigninResponseModel)
 async def signin_user(user: Signin):
