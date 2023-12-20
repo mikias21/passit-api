@@ -15,6 +15,11 @@ async def forgot_password_controller(email: ForgotPassword) -> ForgotPasswordRes
         email.email = email_info.normalized
         
         user = users_collection.find_one({'user_email': email.email})
+
+        # Check if user has activated account
+        if user['user_activated'] != True:
+            return {"message": AuthErrorMessages.INACTIVE_ACCOUNT.value, "status": status.HTTP_400_BAD_REQUEST}
+
         if user:
             token = generate_email_activation_token(email.email)
             email_msg = generate_forgot_password_template(token)

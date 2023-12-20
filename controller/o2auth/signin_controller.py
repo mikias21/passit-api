@@ -124,7 +124,7 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
             login_token = create_access_token({'user_email': user.email})
             
             # Send redirection response
-            return {"access_token": login_token, "token_type": "bearer"}
+            return {"access_token": login_token, "token_type": "bearer", "status": status.HTTP_200_OK}
 
         else:
             return {"message": AuthErrorMessages.ACCOUNT_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}

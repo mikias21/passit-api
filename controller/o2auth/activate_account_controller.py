@@ -15,6 +15,9 @@ async def activate_account_controller(token: str, otp: OTP) -> ActivateAccountRe
         if user:
             days_diff = get_date_time_difference(str(user['user_signup_datetime']))
             if days_diff <= 1:
+                # Check if the OTP code matches
+                if user['user_signup_otp'] != otp.otp:
+                    return {"message": AuthErrorMessages.INCORRECT_OTP.value, "status": status.HTTP_400_BAD_REQUEST}
                 myquery = { "user_email": str(email) }
                 newvalues = { "$set": { "user_activated": "True" } }
                 users_collection.update_one(myquery, newvalues, upsert=False)

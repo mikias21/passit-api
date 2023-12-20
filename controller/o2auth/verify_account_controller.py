@@ -22,4 +22,4 @@ async def verify_account_controller(token: str, account: VerifyAccount) -> Verif
         # raise HTTPException(status_code=, detail=)
     
     login_token = create_access_token({'user_email': email})
-    return {"access_token": login_token, "token_type": "bearer"}
+    return {"access_token": login_token, "token_type": "bearer", "status": status.HTTP_200_OK}

@@ -20,3 +20,4 @@ class AuthErrorMessages(Enum):
     PASSWORD_NOT_MATCH = "Passwords do not match, confirm password again."
     PASSWORD_UPDATED = "Your password has been updated successfully."
     LOGIN_EXPIRED = "Login has expired, please login again."
+    INACTIVE_ACCOUNT = "Account is not active, can not change password."
