@@ -18,8 +18,9 @@ async def activate_account_controller(token: str, otp: OTP) -> ActivateAccountRe
                 myquery = { "user_email": str(email) }
                 newvalues = { "$set": { "user_activated": "True" } }
                 users_collection.update_one(myquery, newvalues, upsert=False)
-                raise HTTPException(status_code=status.HTTP_200_OK, detail=AuthErrorMessages.ACCOUNT_ACTIVATED.value)
+                return {"message": AuthErrorMessages.ACCOUNT_ACTIVATED.value, "status": status.HTTP_200_OK}
             else:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value)
+                return {"message": AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
+                # raise HTTPException(status_code=, detail=)
             
     return {"message": AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value, "status":status.HTTP_401_UNAUTHORIZED}

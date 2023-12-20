@@ -14,10 +14,12 @@ async def verify_account_controller(token: str, account: VerifyAccount) -> Verif
         login_record = users_verify_account_record.find_one({'otp_identifier': otp_identifier})
 
         if login_record['otp_code'].upper() != account.otp.upper():
-            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INCORRECT_OTP.value)
+            return {"message": AuthErrorMessages.INCORRECT_OTP.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+            # raise HTTPException(status_code=, detail=)
 
     else:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value)
+        return {"message": AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
+        # raise HTTPException(status_code=, detail=)
     
     login_token = create_access_token({'user_email': email})
     return {"access_token": login_token, "token_type": "bearer"}

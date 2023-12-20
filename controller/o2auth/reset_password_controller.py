@@ -20,10 +20,12 @@ async def reset_password_controller(token: str, password: ResetPassword) -> Rese
         if user:
 
             if not password_schema.validate(password.password):
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_PASSWORD.value)
+                return {"message": AuthErrorMessages.INVALID_PASSWORD.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+                # raise HTTPException(status_code=, detail=)
         
             if password.password.upper() != password.confirm_password.upper():
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.PASSWORD_NOT_MATCH.value)
+                return {"message": AuthErrorMessages.PASSWORD_NOT_MATCH.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+                # raise HTTPException(status_code=, detail=)
 
             hashed_password = generate_password_hash(password.password)
 
@@ -34,6 +36,8 @@ async def reset_password_controller(token: str, password: ResetPassword) -> Rese
             return {"message": AuthErrorMessages.PASSWORD_UPDATED.value, "status": status.HTTP_201_CREATED}
 
         else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.USER_NOT_FOUND.value)
+            return {"message": AuthErrorMessages.USER_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
+            # raise HTTPException(status_code=, detail=)
 
-    raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value)
+    return {"message": AuthErrorMessages.ACTIVATION_TOKEN_EXPIRED.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+    # raise HTTPException(status_code=, detail=)

@@ -23,7 +23,8 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
         user.email = email_info.normalized
         passed_email_validation = True
     except EmailNotValidError:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_EMAIL.value)
+        return {"message": AuthErrorMessages.INVALID_EMAIL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+        # raise HTTPException(status_code=, detail=)
 
 
     if passed_email_validation:
@@ -34,7 +35,8 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
 
             # Verify password
             if not verify_password_hash(user.password, user_record['user_password']):
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.ACCOUNT_NOT_FOUND.value)
+                return {"message": AuthErrorMessages.ACCOUNT_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
+                # raise HTTPException(status_code=, detail=)
 
             user_activated = user_record['user_activated']
             user_signup_ip = user_record['user_signup_ip']
@@ -42,7 +44,8 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
 
             # Check if user account is activated
             if str(user_activated).upper() == 'False'.upper():
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.ACCOUNT_NOT_ACTIVATED.value)
+                return {"message": AuthErrorMessages.ACCOUNT_NOT_ACTIVATED.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+                # raise HTTPException(status_code=, detail=)
             
             # Parse user agent 
             user_agent = parse(user.user_agent)
@@ -67,9 +70,11 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
                         # Send email with OTP for verification
                         email_message = generate_account_verification_template(verification_token, otp_code)
                         if send_email("Verify Account", user.email, email_message) == 200:
-                            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.VERIFY_ACCOUNT.value)
+                            return {"message": AuthErrorMessages.VERIFY_ACCOUNT.value, "status": status.HTTP_401_UNAUTHORIZED}
+                            # raise HTTPException(status_code=, detail=)
             else:
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_USERAGENT.value)
+                return {"message": AuthErrorMessages.INVALID_USERAGENT.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+                # raise HTTPException(status_code=, detail=)
             
             # Validate user IP
             if validate_ip(user.ip_address):
@@ -93,10 +98,12 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
                         # Send email with OTP for verification
                         email_message = generate_account_verification_template(verification_token, otp_code)
                         if send_email("Verify Account", user.email, email_message) == 200:
-                            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.VERIFY_ACCOUNT.value)
+                            return {"message": AuthErrorMessages.VERIFY_ACCOUNT.value, "status": status.HTTP_401_UNAUTHORIZED}
+                            # raise HTTPException(status_code=, detail=)
                     
             else:
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_IP.value)
+                return {"message": AuthErrorMessages.INVALID_IP.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+                # raise HTTPException(status_code=, detail=)
             
             # add user to db
             signin_record = create_signin_user_record(
@@ -120,5 +127,6 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
             return {"access_token": login_token, "token_type": "bearer"}
 
         else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.ACCOUNT_NOT_FOUND.value)
+            return {"message": AuthErrorMessages.ACCOUNT_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
+            # raise HTTPException(status_code=, detail=)
         

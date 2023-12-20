@@ -21,6 +21,8 @@ async def forgot_password_controller(email: ForgotPassword) -> ForgotPasswordRes
             if send_email("Forgot Password", email.email, email_msg) == 200:
                 return {"message": AuthErrorMessages.FORGOT_PASSWORD.value, "status": status.HTTP_200_OK}
         else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=AuthErrorMessages.USER_NOT_FOUND.value)
+            # raise HTTPException(status_code=, detail=)
+            return {"message": AuthErrorMessages.USER_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
     except EmailNotValidError:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=AuthErrorMessages.INVALID_EMAIL.value)
+        return {"message": AuthErrorMessages.INVALID_EMAIL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+        # raise HTTPException(status_code=, detail=)

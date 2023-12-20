@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class Signin(BaseModel):
@@ -7,6 +8,8 @@ class Signin(BaseModel):
     user_agent: str
 
 class SigninResponseModel(BaseModel):
-    access_token: str
-    token_type: str
+    message: Optional[str] = None
+    status: Optional [int] = None
+    access_token: Optional[str] = None
+    token_type: Optional[str] = None
 

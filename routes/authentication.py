@@ -22,7 +22,7 @@ router = APIRouter(
 )
 
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=SignupResponseModel)
+@router.post('/signup', status_code=status.HTTP_200_OK, response_model=SignupResponseModel)
 async def signup_user(user: Signup):
     response = await signup_controller(user)
     return response
@@ -47,7 +47,7 @@ async def forgot_password(email: ForgotPassword):
     response = await forgot_password_controller(email)
     return response
 
-@router.post('/reset_password/{token}', status_code=status.HTTP_201_CREATED, response_model=ResetPasswordResponseModel)
+@router.post('/reset_password/{token}', status_code=status.HTTP_200_OK, response_model=ResetPasswordResponseModel)
 async def reset_password(token: str, password: ResetPassword):
     response = await reset_password_controller(token, password)
     return response
