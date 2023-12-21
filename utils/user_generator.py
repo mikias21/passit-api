@@ -14,8 +14,8 @@ def create_new_user(user_email: str,
                     user_device: str,
                     user_device_model: str,
                     otp: str,
-                    user_lat: float,
-                    user_long: float,
+                    user_lat,
+                    user_long,
                     user_signup_datetime: str = str(datetime.now())):
     new_user = User()
     new_user.user_id = ObjectId()

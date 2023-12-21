@@ -1,11 +1,13 @@
 import os
 import math
+import json
 import random
 import bleach
 import secrets
 import pyaes
 import pbkdf2
 import binascii
+import requests
 from Crypto.Cipher import AES
 from datetime import datetime
 from passlib.context import CryptContext
@@ -66,3 +68,13 @@ def generate_plane_text(key, iv, cyphered_input) -> str:
     aes = pyaes.AESModeOfOperationCTR(key, pyaes.Counter(iv))
     decrypted = aes.decrypt(cyphered_input)
     return decrypted.decode('utf-8')
+
+def generate_user_longitude_latitude(ip: str):
+    try:
+        response = requests.get(f'https://geolocation-db.com/jsonp/{ip}')
+        response = response.content.decode()
+        response = response.split("(")[1].strip(")")
+        result = json.loads(response)
+        return result['latitude'], result['longitude']
+    except:
+        return 0.0, 0.0

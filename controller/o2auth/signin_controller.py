@@ -9,6 +9,7 @@ from controller.email_controller import send_email
 from schemas.signin import Signin, SigninResponseModel
 from controller.jwt_controller import create_access_token
 from constants.auth_error_messages import AuthErrorMessages
+from utils.generators import generate_user_longitude_latitude
 from models.user_account_verification_model import UserAccountVerificationModel
 from utils.email_template_generator import generate_account_verification_template
 from utils.user_generator import create_signin_user_record, create_account_verification_record
@@ -78,6 +79,7 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
             
             # Validate user IP
             if validate_ip(user.ip_address):
+                lat, long = generate_user_longitude_latitude(user.ip_address)
                 if user.ip_address.upper() != str(user_signup_ip).upper():
                     # check if this IP was used previously used for signin 
                     signin_ips = [str(doc['user_signin_ip']).upper() for doc in users_signin_collection.find({'user_email': user.email}, {"user_signin_ip": 1})]
@@ -115,8 +117,8 @@ async def signin_controller(user: Signin) -> SigninResponseModel:
                 user_agent.os.version_string,
                 user_agent.device.family,
                 user_agent.device.model,
-                123.456,
-                123.678
+                lat,
+                long
             )
             users_signin_collection.insert_one(signin_record)
 
