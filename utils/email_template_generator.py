@@ -40,7 +40,7 @@ def generate_account_activation_template(verification_token: str, otp: str):
                         padding: 8px;
                         text-decoration: none;
                         color: white;
-                        background-color: #00684A;
+                        background-color: #3742fa;
                         border-radius: 5px;
                         font-size: 12px;
                         margin-bottom: 200px;
@@ -71,7 +71,7 @@ def generate_account_activation_template(verification_token: str, otp: str):
                     <div class="otp-container">
                         <p>Use this code to activate your account</p><h3>%s</h3>
                     </div>
-                    <a href="http://localhost:3000/activate/%s" class="activate-link" target="_blank">Verify account</a>
+                    <a href="http://localhost:3000/activate/%s" class="activate-link" target="_blank">Activate account</a>
                     <p><small>You received this email because we received a request for activation for your account. If you didn't request activation
                     you can safely delete this email.</small></p>
                 </div>
@@ -124,7 +124,7 @@ def generate_account_verification_template(verification_token: str, otp: str):
                         padding: 8px;
                         text-decoration: none;
                         color: white;
-                        background-color: #00684A;
+                        background-color: #3742fa;
                         border-radius: 5px;
                         font-size: 12px;
                         margin-bottom: 200px;
@@ -208,7 +208,7 @@ def generate_forgot_password_template(token: str):
                         padding: 8px;
                         text-decoration: none;
                         color: white;
-                        background-color: #00684A;
+                        background-color: #3742fa;
                         border-radius: 5px;
                         font-size: 12px;
                         margin-bottom: 200px;
