@@ -16,6 +16,7 @@ async def get_passwords_controller(email: str) -> list[PasswordsResponseModel]:
     user_passwords_list = list(user_passwords)
     for password in user_passwords_list:
         password['password_id'] = str(password['password_id'])
+        password['password'] = str(password['password'])
 
     return user_passwords_list
 
