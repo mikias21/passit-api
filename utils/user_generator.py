@@ -17,23 +17,13 @@ def create_new_user(user_email: str,
                     user_lat,
                     user_long,
                     user_signup_datetime: str = str(datetime.now())):
-    new_user = User()
-    new_user.user_id = ObjectId()
-    new_user.user_email = user_email
-    new_user.user_password = user_password
-    new_user.user_signup_ip = user_ip
-    new_user.user_signup_browser = user_browser
-    new_user.user_signup_browser_version = user_browser_ver
-    new_user.user_signup_os = user_os
-    new_user.user_signup_os_version = user_os_ver
-    new_user.user_signup_device = user_device
-    new_user.user_signup_device_model = user_device_model
-    new_user.user_signup_latitude = user_lat
-    new_user.user_signup_longtiude = user_long
-    new_user.user_signup_otp = otp
-    new_user.user_signup_datetime = user_signup_datetime
+
+    new_user = {'user_id': ObjectId(), 'user_email': user_email, 'user_password': user_password,
+                'user_signup_ip': user_ip, 'user_signup_browser': user_browser, 'user_signup_browser_version': user_browser_ver,
+                'user_signup_os': user_os, 'user_signup_os_version': user_os_ver, 'user_signup_device': user_device, 'user_signup_device_model': user_device_model,
+                'user_signup_latitude': user_lat, 'user_signup_longtiude': user_long, 'user_signup_otp': otp, 'user_signup_datetime': user_signup_datetime}
     
-    return dict(new_user)
+    return new_user
 
 def create_signin_user_record(user_email: str, 
                     user_ip: str,
@@ -47,22 +37,13 @@ def create_signin_user_record(user_email: str,
                     user_long: float,
                     user_signin_datetime: str = str(datetime.now()), 
                     otp: str = ""):
-    record = UserLogin()
-    record.user_id = ObjectId()
-    record.user_email = user_email
-    record.user_signin_ip = user_ip
-    record.user_signin_browser = user_browser
-    record.user_signin_browser_version = user_browser_ver
-    record.user_signin_os = user_os
-    record.user_signin_os_version = user_os_ver
-    record.user_signin_device = user_device
-    record.user_signin_device_model = user_device_model
-    record.user_signin_latitude = user_lat
-    record.user_signin_longtiude = user_long
-    record.user_signin_otp = otp
-    record.user_signin_datetime = user_signin_datetime
 
-    return dict(record)
+    record = {'user_id': ObjectId(), 'user_email': user_email,
+                'user_signin_ip': user_ip, 'user_signin_browser': user_browser, 'user_signin_browser_version': user_browser_ver,
+                'user_signin_os': user_os, 'user_signin_os_version': user_os_ver, 'user_signin_device': user_device, 'user_signin_device_model': user_device_model,
+                'user_signin_latitude': user_lat, 'user_signin_longtiude': user_long, 'user_signin_otp': otp, 'user_signin_datetime': user_signin_datetime}
+
+    return record
 
 
 def create_account_verification_record(email: str, verification_token: str, otp_code: str, user_ip: str,
@@ -93,4 +74,9 @@ def create_account_verification_record(email: str, verification_token: str, otp_
     record.user_datetime = verify_datetime
     record.otp_identifier = otp_identifier
 
-    return dict(record)
+    record = {'rec_id': ObjectId(), 'user_email': email, 'user_verification_token': verification_token,
+            'otp_code': otp_code, 'ip_address': user_ip, 'user_browser': user_browser, 'user_browser_version': user_browser_ver,
+            'user_os': user_os, 'user_os_version': user_os_ver, 'user_device': user_device, 'user_device_model': user_device_model,
+            'user_latitude': user_lat, 'user_longitude': user_long, 'user_datetime': verify_datetime, 'otp_identifier': otp_identifier}
+
+    return record

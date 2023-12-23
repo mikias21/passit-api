@@ -7,7 +7,7 @@ def send_email(subject: str, email: str, message: str):
         'Messages': [
             {
             "From": {
-                "Email": "noreply@passit.com",
+                "Email": "mikiasmesfina0123@gmail.com",
                 "Name": "passit.io"
             },
             "To": [
