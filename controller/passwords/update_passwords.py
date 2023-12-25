@@ -11,29 +11,29 @@ from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestMo
 
 async def update_password_controller(id: str, email: str, password: PasswordsRequestModel) -> PasswordsResponseModel:
     if not email:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
+        return {"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
     
     if not id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
+        return {"message": PasswordErrorMessages.PASSWORD_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
     
     try:
         id = ObjectId(id)
     except Exception:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)    
+        return {"message": PasswordErrorMessages.PASSWORD_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
     
     # Validate label
     if not password.label.isalnum() or len(password.label.strip()) > 20:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
+        return {"message": PasswordErrorMessages.INVALID_LABEL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     
     # Validate category
-    if password.category is None:
-        password.category = "main"
-    elif not password.category.isalnum() or len(password.category.strip()) > 20:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
+    # if password.category is None:
+    #     password.category = "main"
+    # elif not password.category.isalnum() or len(password.category.strip()) > 20:
+    #     raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
     
     # validate url
     if password.url and not validate_url(password.url.strip()):
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_URL.value)
+        return {"message": PasswordErrorMessages.INVALID_URL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     elif password.url:
         password.url = generate_encoded_url(password.url)
 

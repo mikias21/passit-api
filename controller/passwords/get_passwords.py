@@ -10,7 +10,7 @@ from database.database_connection import users_password_collection
 
 async def get_passwords_controller(email: str) -> list[PasswordsResponseModel]:
     if not email:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
+        return [{"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}]
     
     user_passwords = users_password_collection.find({"owner_email": email})
     user_passwords_list = list(user_passwords)
@@ -22,13 +22,13 @@ async def get_passwords_controller(email: str) -> list[PasswordsResponseModel]:
 
 async def get_password_controller(email: str, password_id: str) -> PasswordsResponseModel:
     if not email:
-        raise HTTPException()
+        return {"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
     
     try:
         if password_id:
             password_id = ObjectId(password_id)
     except Exception:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
+        return {"message": PasswordErrorMessages.PASSWORD_NOT_FOUND.value, "status": status.HTTP_404_NOT_FOUND}
 
     password = users_password_collection.find_one({"owner_email":email, "password_id": ObjectId(password_id)})
     password['password_id'] = str(password['password_id'])

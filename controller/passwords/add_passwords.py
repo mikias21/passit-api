@@ -13,26 +13,26 @@ from database.database_connection import users_password_collection, users_collec
 
 async def add_password_controller(password: PasswordsRequestModel, email: str) -> PasswordsResponseModel:
     if not email:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
+        return {"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
     
     # Validate label
     if not password.label.isalnum() or len(password.label.strip()) > 20:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
+        return {"message": PasswordErrorMessages.INVALID_LABEL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     # Check if Label is not already used
-    pass_rec = users_password_collection.find_one({"label": password.label})
+    pass_rec = users_password_collection.find_one({"label": password.label, "owner_email": email})
     if pass_rec:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.LABEL_USED.value)
+        return {"message": PasswordErrorMessages.LABEL_USED.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
 
     # Validate category
     if password.category is None:
         password.category = "main"
     elif not password.category.isalnum() or len(password.category.strip()) > 20:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_LABEL.value)
+        return {"message": PasswordErrorMessages.INVALID_LABEL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     # Check if category is not used already or use category which is not found
 
     # validate url
     if password.url and not validate_url(password.url.strip()):
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=PasswordErrorMessages.INVALID_URL.value)
+        return {"message": PasswordErrorMessages.INVALID_URL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     elif password.url:
         password.url = generate_encoded_url(password.url.strip())
 
@@ -43,7 +43,7 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     # Encrypt password
     user_rec = users_collection.find_one({"user_email": email})
     if not user_rec:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=AuthErrorMessages.LOGIN_EXPIRED.value)
+        return {"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}
     
     key, iv, cyphered = generate_encrypted_text(password.password, email)
     new_password = dict(password)

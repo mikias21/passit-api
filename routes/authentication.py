@@ -2,6 +2,7 @@ from fastapi.responses import ORJSONResponse, JSONResponse
 from fastapi import APIRouter, status, Response, Request, Depends, HTTPException
 # Local imports
 from schemas.otp import OTP
+from schemas.signout import SignoutModel
 from schemas.signup import Signup, SignupResponseModel
 from schemas.signin import Signin, SigninResponseModel
 from schemas.activate_account import ActivateAccountResponseModel
@@ -52,8 +53,7 @@ async def reset_password(token: str, password: ResetPassword):
     response = await reset_password_controller(token, password)
     return response
 
-@router.get('/signout/{token}', status_code=status.HTTP_200_OK)
+@router.get('/signout/{token}', status_code=status.HTTP_200_OK, response_model=SignoutModel)
 async def signout(token: str):
-    status = signout_controller(token)
-    if status == 200:
-        raise HTTPException(status_code=status, detail="success")
+    response = signout_controller(token)
+    return response
