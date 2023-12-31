@@ -20,3 +20,10 @@ class PasswordsRequestModel(BaseModel):
     category: Optional[str] = None
     url: Optional[str] = None
     description: Optional[str] = None
+
+class PasswordLabelRequest(BaseModel):
+    label: str
+
+class DecryptedPasswordModelResponse(BaseModel):
+    password: str
+    status: int

@@ -7,3 +7,5 @@ class PasswordErrorMessages(Enum):
     INVALID_URL = "Please use valid url for password."
     LABEL_USED = "Password with this label already exsit please use a unique label to avoid overwritting."
     NOT_FOUND = "Password not found with this id."
+    CONFIRM_PASSWORD_LABEL = "Confirm again password label in the input box."
+    URL_LENGTH_EXCEEDED = "URL length exceeded, try to use the domain name only."

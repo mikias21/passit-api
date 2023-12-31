@@ -7,8 +7,9 @@ from constants.password_error_message import PasswordErrorMessages
 from controller.passwords.add_passwords import add_password_controller
 from controller.passwords.delete_passwords import delete_password_controller
 from controller.passwords.update_passwords import update_password_controller
-from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel
+from controller.passwords.decrypt_password import decrypt_password_controller
 from controller.passwords.get_passwords import get_passwords_controller, get_password_controller
+from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel, PasswordLabelRequest, DecryptedPasswordModelResponse
 
 router = APIRouter(prefix='/passwords')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='signin')
@@ -43,7 +44,13 @@ async def update_password(id: str, password: PasswordsRequestModel, token: str =
     return data
 
 @router.delete('/{id}', status_code=status.HTTP_200_OK, response_model=PasswordsResponseModel)
-async def delete_password(id: str, token: str = Depends(oauth2_scheme)):
+async def delete_password(id: str, label: PasswordLabelRequest, token: str = Depends(oauth2_scheme)):
     email = verify_access_token(token)
-    data = await delete_password_controller(id, email)
+    data = await delete_password_controller(id, email, label)
+    return data
+
+@router.get('/view/{id}', status_code=status.HTTP_200_OK, response_model=DecryptedPasswordModelResponse)
+async def decrypt_password(id: str, token: str = Depends(oauth2_scheme)):
+    email = verify_access_token(token)
+    data = await decrypt_password_controller(id, email)
     return data

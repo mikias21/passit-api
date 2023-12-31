@@ -25,6 +25,6 @@ def validate_email_activation_token(token):
 def validate_url(url: str) -> bool:
     parsed_url = urlparse(url)
 
-    if parsed_url.scheme and parsed_url.netloc:
+    if parsed_url.scheme and parsed_url.netloc and len(url) <= 20:
         return True
     return False

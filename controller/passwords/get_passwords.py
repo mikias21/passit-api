@@ -11,7 +11,6 @@ from database.database_connection import users_password_collection
 async def get_passwords_controller(email: str) -> list[PasswordsResponseModel]:
     if not email:
         return [{"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}]
-    
     user_passwords = users_password_collection.find({"owner_email": email})
     user_passwords_list = list(user_passwords)
     for password in user_passwords_list:

@@ -31,6 +31,8 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     # Check if category is not used already or use category which is not found
 
     # validate url
+    if len(password.url.strip()) > 50:
+        return {"message": PasswordErrorMessages.URL_LENGTH_EXCEEDED.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     if password.url and not validate_url(password.url.strip()):
         return {"message": PasswordErrorMessages.INVALID_URL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
     elif password.url:
