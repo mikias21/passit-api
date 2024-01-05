@@ -1,7 +1,7 @@
 from constants.general import General
 
 
-URL = General.LOCAL_URL if not General.RELEASE else General.REMOTE_URL
+URL = General.LOCAL_URL.value if not General.RELEASE.value else General.REMOTE_URL.value
 
 
 def generate_account_activation_template(verification_token: str, otp: str):
