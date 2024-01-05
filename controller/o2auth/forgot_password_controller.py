@@ -17,7 +17,7 @@ async def forgot_password_controller(email: ForgotPassword) -> ForgotPasswordRes
         user = users_collection.find_one({'user_email': email.email})
 
         # Check if user has activated account
-        if user['user_activated'] != True:
+        if bool(user['user_activated']) != True:
             return {"message": AuthErrorMessages.INACTIVE_ACCOUNT.value, "status": status.HTTP_400_BAD_REQUEST}
 
         if user:
