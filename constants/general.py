@@ -6,3 +6,4 @@ class General(Enum):
     ALLOWED_ATTRIBUTES = {'a': ['href', 'title'], 'blockquote': ['cite']}
     LOCAL_URL = "http://localhost:3000"
     REMOTE_URL = "https://passitt.netlify.app"
+    DIGITAL_OCEN = True
