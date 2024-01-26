@@ -8,11 +8,11 @@ class PasswordsResponseModel(BaseModel):
     category: Optional[str] = None
     url: Optional[str] = None
     description: Optional[str] = None
+    important: Optional[bool] = False
     owner_email: Optional[str] = None
     added_date_time: Optional[str] = None
     message: Optional[str] = None
     status: Optional[int] = None
-
 
 class PasswordsRequestModel(BaseModel):
     label: str

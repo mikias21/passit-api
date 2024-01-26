@@ -1,10 +1,8 @@
 import os
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
-from fastapi import HTTPException, status
 
 # Local imports
-from constants.auth_error_messages import AuthErrorMessages
 from database.database_connection import users_login_token_collection
 
 def create_access_token(data: dict):

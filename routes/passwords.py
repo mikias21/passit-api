@@ -1,3 +1,4 @@
+from fastapi import Header
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import APIRouter, status, Depends, HTTPException
 
@@ -8,6 +9,7 @@ from controller.passwords.add_passwords import add_password_controller
 from controller.passwords.delete_passwords import delete_password_controller
 from controller.passwords.update_passwords import update_password_controller
 from controller.passwords.decrypt_password import decrypt_password_controller
+from controller.passwords.update_password_importance import update_password_importance
 from controller.passwords.get_passwords import get_passwords_controller, get_password_controller
 from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel, PasswordLabelRequest, DecryptedPasswordModelResponse
 
@@ -53,4 +55,12 @@ async def delete_password(id: str, label: PasswordLabelRequest, token: str = Dep
 async def decrypt_password(id: str, token: str = Depends(oauth2_scheme)):
     email = verify_access_token(token)
     data = await decrypt_password_controller(id, email)
+    return data
+
+@router.get('/important/{id}/{token}', status_code=status.HTTP_201_CREATED, response_model=PasswordsResponseModel)
+async def important_password(id: str, token: str):
+    email = verify_access_token(token)
+    data = await update_password_importance(id, email)
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PasswordErrorMessages.PASSWORD_NOT_FOUND.value)
     return data
