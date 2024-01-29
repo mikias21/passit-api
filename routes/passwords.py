@@ -13,7 +13,7 @@ from controller.passwords.update_password_importance import update_password_impo
 from controller.passwords.get_passwords import get_passwords_controller, get_password_controller
 from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel, PasswordLabelRequest, DecryptedPasswordModelResponse
 
-router = APIRouter(prefix='/api/passwords')
+router = APIRouter(prefix='/passwords')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='signin')
 
 @router.get('/', status_code=status.HTTP_200_OK, response_model=list[PasswordsResponseModel])
