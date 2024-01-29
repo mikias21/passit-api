@@ -18,7 +18,7 @@ def create_new_user(user_email: str,
                     user_long,
                     user_signup_datetime: str = str(datetime.now())):
 
-    new_user = {'user_id': ObjectId(), 'user_email': user_email, 'user_password': user_password,
+    new_user = {'user_id': ObjectId(), 'user_email': user_email, 'user_password': user_password, 'user_activated': False,
                 'user_signup_ip': user_ip, 'user_signup_browser': user_browser, 'user_signup_browser_version': user_browser_ver,
                 'user_signup_os': user_os, 'user_signup_os_version': user_os_ver, 'user_signup_device': user_device, 'user_signup_device_model': user_device_model,
                 'user_signup_latitude': user_lat, 'user_signup_longtiude': user_long, 'user_signup_otp': otp, 'user_signup_datetime': user_signup_datetime}
