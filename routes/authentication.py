@@ -18,7 +18,7 @@ from controller.o2auth.forgot_password_controller import forgot_password_control
 from controller.o2auth.activate_account_controller import activate_account_controller
 
 router = APIRouter(
-    prefix="/auth",
+    prefix="/api/auth",
     tags=['Authentication']
 )
 
