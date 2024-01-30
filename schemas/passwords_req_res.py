@@ -9,6 +9,7 @@ class PasswordsResponseModel(BaseModel):
     url: Optional[str] = None
     description: Optional[str] = None
     important: Optional[bool] = False
+    starred: Optional[bool] = False
     owner_email: Optional[str] = None
     added_date_time: Optional[str] = None
     message: Optional[str] = None

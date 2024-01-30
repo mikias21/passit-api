@@ -49,7 +49,7 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
     
     key, iv, cyphered = generate_encrypted_text(password.password, email)
     new_password = dict(password)
-    new_password.update({'password': Binary(cyphered), 'enc_key': Binary(key), 'enc_iv': iv, 'password_id': ObjectId(), 'important': False, 'owner_email': email, 'added_date_time': str(datetime.now())})
+    new_password.update({'password': Binary(cyphered), 'enc_key': Binary(key), 'enc_iv': iv, 'password_id': ObjectId(), 'important': False, 'starred': False, 'owner_email': email, 'added_date_time': str(datetime.now())})
 
     result = users_password_collection.insert_one(new_password)
 

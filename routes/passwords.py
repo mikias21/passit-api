@@ -9,6 +9,7 @@ from controller.passwords.add_passwords import add_password_controller
 from controller.passwords.update_passwords import update_password_controller
 from controller.passwords.decrypt_password import decrypt_password_controller
 from controller.passwords.update_password_importance import update_password_importance
+from controller.passwords.update_password_starred import update_password_starred_controller
 from controller.passwords.get_passwords import get_passwords_controller, get_password_controller, get_deleted_passwords_controller
 from schemas.passwords_req_res import PasswordsResponseModel, PasswordsRequestModel, PasswordLabelRequest, DecryptedPasswordModelResponse
 from controller.passwords.delete_passwords import delete_password_controller, restore_password_controller, delete_password_forever_controller
@@ -83,4 +84,10 @@ async def restore_password(id: str, token: str):
 async def delete_password_forever(id: str, label: PasswordLabelRequest, token: str):
     email = verify_access_token(token)
     data = await delete_password_forever_controller(id, email, label)
+    return data
+
+@router.put('/starred/{id}/{token}', status_code=status.HTTP_201_CREATED, response_model=PasswordsResponseModel)
+async def starred_password(id: str, token: str):
+    email = verify_access_token(token)
+    data = await update_password_starred_controller(id, email)
     return data
