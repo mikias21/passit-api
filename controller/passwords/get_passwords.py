@@ -6,7 +6,7 @@ from utils.generators import generate_plane_text
 from constants.password_error_message import PasswordErrorMessages
 from constants.auth_error_messages import AuthErrorMessages
 from schemas.passwords_req_res import PasswordsResponseModel
-from database.database_connection import users_password_collection
+from database.database_connection import users_password_collection, users_deleted_passwords
 
 async def get_passwords_controller(email: str) -> list[PasswordsResponseModel]:
     if not email:
@@ -35,3 +35,16 @@ async def get_password_controller(email: str, password_id: str) -> PasswordsResp
     password['password'] = decrypted_password
 
     return password
+
+async def get_deleted_passwords_controller(email: str):
+    if not email:
+        return [{"message": AuthErrorMessages.LOGIN_EXPIRED.value, "status": status.HTTP_401_UNAUTHORIZED}]
+    
+    deleted_passwords = users_deleted_passwords.find({"owner_email": email})
+    deleted_passwords_list = list(deleted_passwords)
+
+    for password in deleted_passwords_list:
+        password['password_id'] = str(password['password_id'])
+        password['password'] = str(password['password'])
+    
+    return deleted_passwords_list

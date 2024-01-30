@@ -11,3 +11,4 @@ users_signin_collection = client.passit_main_db.users_signin
 users_verify_account_record = client.passit_main_db.users_verify_account_record
 users_password_collection = client.passit_main_db.users_password
 users_login_token_collection = client.passit_main_db.users_login_token_collection
+users_deleted_passwords = client.passit_main_db.deleted_passwords
