@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 # Local imports
 from constants.general import General
-from routes import authentication, passwords
+from routes import authentication, passwords, categories
 
 # Local .env
 load_dotenv('.env')
@@ -26,6 +26,7 @@ app.add_middleware(
 
 app.include_router(authentication.router)
 app.include_router(passwords.router)
+app.include_router(categories.router)
 
 def run_server():
     if General.RELEASE.value:

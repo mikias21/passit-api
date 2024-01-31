@@ -1,4 +1,3 @@
-from fastapi import Header
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import APIRouter, status, Depends, HTTPException
 
