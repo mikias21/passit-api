@@ -9,7 +9,7 @@ from constants.password_error_message import PasswordErrorMessages
 from utils.generators import generate_encoded_url, generate_clean_input
 from utils.generators import generate_encrypted_text, generate_plane_text
 from schemas.passwords_req_res import PasswordsRequestModel, PasswordsResponseModel
-from database.database_connection import users_password_collection, users_collection
+from database.database_connection import users_password_collection, users_collection, users_passwords_categories
 
 async def add_password_controller(password: PasswordsRequestModel, email: str) -> PasswordsResponseModel:
     if not email:
@@ -28,7 +28,12 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
         password.category = "main"
     elif not password.category.isalnum() or len(password.category.strip()) > 20:
         return {"message": PasswordErrorMessages.INVALID_LABEL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
-    # Check if category is not used already or use category which is not found
+    elif password.category.isalnum() and len(password.category.strip()) > 20:
+        category_rec = users_passwords_categories.find_one({"name": password.category, "owner_email": email})
+        if category_rec:
+            return {"message": PasswordErrorMessages.CATEGORY_NOT_FOUND.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
+
+    # Check if category is not used already or use category which is not found 
 
     # validate url
     if len(password.url.strip()) > 50:
