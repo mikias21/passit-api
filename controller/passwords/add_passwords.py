@@ -28,7 +28,7 @@ async def add_password_controller(password: PasswordsRequestModel, email: str) -
         password.category = "main"
     elif not password.category.isalnum() or len(password.category.strip()) > 20:
         return {"message": PasswordErrorMessages.INVALID_LABEL.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
-    elif password.category.isalnum() and len(password.category.strip()) > 20:
+    elif password.category.isalnum() and len(password.category.strip()) < 20:
         category_rec = users_passwords_categories.find_one({"name": password.category, "owner_email": email})
         if category_rec:
             return {"message": PasswordErrorMessages.CATEGORY_NOT_FOUND.value, "status": status.HTTP_406_NOT_ACCEPTABLE}
