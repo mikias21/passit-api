@@ -9,3 +9,4 @@ class PasswordErrorMessages(Enum):
     NOT_FOUND = "Password not found with this id."
     CONFIRM_PASSWORD_LABEL = "Confirm again password label in the input box."
     URL_LENGTH_EXCEEDED = "URL length exceeded, try to use the domain name only."
+    CATEGORY_NOT_FOUND = "Category not found."
